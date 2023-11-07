@@ -1,6 +1,6 @@
 import openmm as mm
 import argparse
-import sys
+import sys,os
 import numpy as np
 import openmm.app as mm_app
 import openmm.unit as mm_unit
@@ -30,7 +30,7 @@ def fix_pdb(
     fixer.findMissingAtoms()
     fixer.addMissingAtoms()
     fixer.addMissingHydrogens(7.0)
-    mm_app.PDBFile.writeFile(fixer.topology, fixer.positions, open(f'{outdir}/{file_name}_hydrogen_added.pdb', 'w'))
+    mm_app.PDBFile.writeFile(fixer.topology, fixer.positions, open(os.path.join(outdir,f'{file_name}_hydrogen_added.pdb'), 'w'))
     return fixer.topology, fixer.positions
 
 def set_system(topology):
@@ -74,7 +74,7 @@ def minimize_energy(
     simulation.minimizeEnergy(1, 1000)
     # Save positions
     minpositions = simulation.context.getState(getPositions=True).getPositions()
-    mm_app.PDBFile.writeFile(topology, minpositions, open(outdir+f'{out_title}.pdb','w'))
+    mm_app.PDBFile.writeFile(topology, minpositions, open(os.path.join(outdir,f'{out_title}.pdb'),'w'))
 
     reporter.close()
 

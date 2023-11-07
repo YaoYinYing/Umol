@@ -199,12 +199,12 @@ best_conf, best_conf_pos, best_conf_err, atoms, nonH_inds, mol, best_conf_id  = 
 conf_err = pd.DataFrame()
 conf_err['id'] = [args.pred_pdb[0].split('/')[-1].split('_')[0]]
 conf_err['conformer_dmat_err'] = best_conf_err
-conf_err.to_csv(outdir+'conformer_dmat_err.csv', index=None)
+conf_err.to_csv(os.path.join(outdir,'conformer_dmat_err.csv'), index=None)
 #Align it to the prediction
 aligned_conf_pos = align_coords_transform(pred_ligand['chain_coords'], best_conf_pos, nonH_inds)
 
 #Write sdf - better to define bonds
-write_sdf(mol, best_conf, aligned_conf_pos, best_conf_id, outdir+conf_err['id'].values[0]+'_pred_ligand.sdf')
+write_sdf(mol, best_conf, aligned_conf_pos, best_conf_id, os.path.join(outdir,'pred_ligand.sdf'))
 
 #Write pdb with ligand file
 #write_pdb(aligned_conf_pos, atoms, pred_ligand['chain_bfactors'], pred_ligand['chain_atom_numbers'][0], outdir+'best_ligand_conf.pdb')

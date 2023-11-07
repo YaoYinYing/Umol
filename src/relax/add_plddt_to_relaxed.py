@@ -113,5 +113,5 @@ outdir = args.outdir[0]
 
 #Write PDB
 id=args.raw_complex[0].split('/')[-1].split('_')[0]
-outname=outdir+id+'_relaxed_plddt.pdb'
+outname=os.path.join(outdir,id+'_relaxed_plddt.pdb')
 write_pdb(relaxed_coords, relaxed_chains, relaxed_atom_numbers, relaxed_3seq, relaxed_resnos, relaxed_atoms, raw_bfactors, outname)
