@@ -279,6 +279,9 @@ id = args.id[0]
 ckpt_params =  np.load(args.ckpt_params[0], allow_pickle=True)
 print(args.target_pos)
 target_pos = np.array([int(x) for x in args.target_pos[0].split(',')])
+
+#Subtract 1 from the target positions to make them zero indexed
+target_pos -=1 
 num_recycles = args.num_recycles[0]
 outdir = args.outdir[0]
 

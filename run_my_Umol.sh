@@ -69,8 +69,6 @@ mkdir -p ${OUTDIR}
 source /opt/anaconda3/etc/profile.d/conda.sh
 conda activate Umol
 
-# P2Rank
-P2Rank=$(which prank)
 
 set -e 
 
