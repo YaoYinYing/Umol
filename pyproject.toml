@@ -1,0 +1,60 @@
+[build-system]
+requires = ["poetry-core>=1.0.0,<2.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "Umol"
+version = "0.0.1"
+description = "Umol code"
+authors = ["Name <email@address>"]
+
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/patrickbryant1/Umol"
+classifiers = [
+    "Topic :: Scientific/Engineering :: Biochemistry",
+    "Topic :: Scientific/Engineering :: Protein Engineering"
+]
+
+packages = [
+    { include = "umol" },
+    { include = "umol/*.py" },
+]
+
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+setuptools = '<70.0.0'
+absl-py = '*'
+amberutils = '*'
+biopython = '1.81'
+click='8.1.7'
+contextlib2='21.6.0'
+dm-haiku='0.0.11'
+h5py='^3.10.0' 
+dm-tree= '*'
+jax='0.4.23'
+ml-collections='0.1.1'
+msgpack='1.0.7'
+pdb4amber='22.0'
+tensorflow='2.16.1'
+rich='*'
+protobuf='4.25.1'
+
+pandas='^2.1.4' 
+pydantic ='*' 
+scipy='1.11.4'
+numpy='1.26.4'
+
+hydra-core='*'
+
+[tool.poetry.scripts]
+umol_make_msa_seq_feats = "umol.make_msa_seq_feats:main"
+umol_make_ligand_feats = "umol.make_ligand_feats:main"
+umol_make_targetpost_npy = "umol.make_targetpost_npy:main"
+umol_predict = "umol.predict:main"
+
+umol_align_ligand_conformer = "umol.relax.align_ligand_conformer:main"
+
+umol_openmm_relax = "umol.relax.openmm_relax:main"
+umol_add_plddt_to_relaxed = "umol.relax.add_plddt_to_relaxed:main"

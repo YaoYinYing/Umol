@@ -1,11 +1,19 @@
 #Install conda env
-conda env create -f environment.yml
+conda create -n umol -y
+conda activate umol
+conda install python=3.10 -y
+conda install -y ambertools cudatoolkit=11.8.0 cudnn=8.9.2.26 openmm=8.1.0 openmmforcefields=0.11.2 pdbfixer
+conda install -y -c bioconda -c conda-forge hhsuite --no-deps
+
+
+pip install . 
+pip install --upgrade "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+
+pip install numpy==1.26.4
+
 
 wait
-conda activate umol
-pip install --upgrade "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-pip install --upgrade numpy
-conda deactivate
+
 
 ## Get network parameters for Umol (a few minutes)
 #Pocket params
@@ -25,13 +33,5 @@ mv uniclust30_2018_08_hhsuite.tar.gz data
 cd data
 tar -zxvf uniclust30_2018_08_hhsuite.tar.gz
 cd ..
-
-wait
-## Install HHblits (a few minutes)
-git clone https://github.com/soedinglab/hh-suite.git
-mkdir -p hh-suite/build && cd hh-suite/build
-cmake -DCMAKE_INSTALL_PREFIX=. ..
-make -j 4 && make install
-cd ../..
 
 wait
