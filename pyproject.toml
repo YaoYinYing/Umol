@@ -27,7 +27,7 @@ python = ">=3.9,<3.12"
 setuptools = '<70.0.0'
 absl-py = '*'
 biopython = '1.81'
-dm-haiku=''
+dm-haiku='*'
 h5py='^3.9.0' 
 dm-tree= '*'
 jax='^0.4'
