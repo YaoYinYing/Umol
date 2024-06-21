@@ -34,24 +34,36 @@ umol_make_ligand_feats --input_smiles $LIGAND_SMILES \
 
 wait
 
-POCKET_INDICES=./data/test_case/7NB4/7NB4_pocket_indices.npy #Zero indexed numpy array of what residues are in the pocket (all CBs within 10Å from the ligand)
-## Generate a pocket indices file from a list of what residues (zero indexed) are in the pocket (all CBs within 10Å from the ligand). (seconds)
-umol_make_targetpost_npy --outfile $POCKET_INDICES --target_pos ${TARGET_POS}
-
 ## Predict (a few minutes)
 MSA_FEATS=$OUTDIR/msa_features.pkl
 LIGAND_FEATS=$OUTDIR/ligand_inp_features.pkl
 NUM_RECYCLES=3
-#Change to no-pocket params if no pocket
-#Then also leave out the target pos
-umol_predict --msa_features  $MSA_FEATS \
---ligand_features $LIGAND_FEATS \
---id $ID \
---ckpt_params $POCKET_PARAMS \
---target_pos $POCKET_INDICES \
---num_recycles $NUM_RECYCLES \
---outdir $OUTDIR
 
+if [[ ! -z $TARGET_POS ]];then
+
+
+    POCKET_INDICES=./data/test_case/7NB4/7NB4_pocket_indices.npy #Zero indexed numpy array of what residues are in the pocket (all CBs within 10Å from the ligand)
+    ## Generate a pocket indices file from a list of what residues (zero indexed) are in the pocket (all CBs within 10Å from the ligand). (seconds)
+    umol_make_targetpost_npy --outfile $POCKET_INDICES --target_pos ${TARGET_POS}
+
+    #Change to no-pocket params if no pocket
+    #Then also leave out the target pos
+    umol_predict --msa_features  $MSA_FEATS \
+    --ligand_features $LIGAND_FEATS \
+    --id $ID \
+    --ckpt_params $POCKET_PARAMS \
+    --target_pos $POCKET_INDICES \
+    --num_recycles $NUM_RECYCLES \
+    --outdir $OUTDIR
+
+else 
+    umol_predict --msa_features  $MSA_FEATS \
+    --ligand_features $LIGAND_FEATS \
+    --id $ID \
+    --ckpt_params $NO_POCKET_PARAMS \
+    --num_recycles $NUM_RECYCLES \
+    --outdir $OUTDIR
+fi
 
 wait
 RAW_PDB=$OUTDIR/$ID'_pred_raw.pdb'

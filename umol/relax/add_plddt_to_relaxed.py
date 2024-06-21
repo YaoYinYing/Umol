@@ -14,7 +14,7 @@ import pdb
 
 ##############FUNCTIONS##############
 
-def read_pdb(pdbname):
+def read_pdb_plddt(pdbname):
     '''Read PDB
     '''
 
@@ -80,7 +80,7 @@ def format_line(atm_no, atm_name, res_name, chain, res_no, coord, occ, B , atm_i
         line = 'ATOM  '+atm_no+'  '+atm_name+res_name+' '+chain+res_no+' '*4+x+y+z+occ+B+' '*11+atm_id+'  '
     return line
 
-def write_pdb(coords, chains, atm_nos, seq, resnos, atoms, bfacs, outname):
+def write_pdb_plddt(coords, chains, atm_nos, seq, resnos, atoms, bfacs, outname):
     """Write PDB
     """
 
@@ -107,11 +107,11 @@ def main():
     args = parser.parse_args()
 
     #Data
-    raw_coords, raw_chains, raw_atom_numbers, raw_3seq, raw_resnos, raw_atoms, raw_bfactors = read_pdb(args.raw_complex[0])
-    relaxed_coords, relaxed_chains, relaxed_atom_numbers,  relaxed_3seq, relaxed_resnos, relaxed_atoms, relaxed_bfactors = read_pdb(args.relaxed_complex[0])
+    raw_coords, raw_chains, raw_atom_numbers, raw_3seq, raw_resnos, raw_atoms, raw_bfactors = read_pdb_plddt(args.raw_complex[0])
+    relaxed_coords, relaxed_chains, relaxed_atom_numbers,  relaxed_3seq, relaxed_resnos, relaxed_atoms, relaxed_bfactors = read_pdb_plddt(args.relaxed_complex[0])
     outdir = args.outdir[0]
 
     #Write PDB
     id=args.raw_complex[0].split('/')[-1].split('_')[0]
     outname=outdir+id+'_relaxed_plddt.pdb'
-    write_pdb(relaxed_coords, relaxed_chains, relaxed_atom_numbers, relaxed_3seq, relaxed_resnos, relaxed_atoms, raw_bfactors, outname)
+    write_pdb_plddt(relaxed_coords, relaxed_chains, relaxed_atom_numbers, relaxed_3seq, relaxed_resnos, relaxed_atoms, raw_bfactors, outname)

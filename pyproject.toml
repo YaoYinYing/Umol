@@ -49,12 +49,4 @@ numpy='1.26.4'
 hydra-core='*'
 
 [tool.poetry.scripts]
-umol_make_msa_seq_feats = "umol.make_msa_seq_feats:main"
-umol_make_ligand_feats = "umol.make_ligand_feats:main"
-umol_make_targetpost_npy = "umol.make_targetpost_npy:main"
-umol_predict = "umol.predict:main"
-
-umol_align_ligand_conformer = "umol.relax.align_ligand_conformer:main"
-
-umol_openmm_relax = "umol.relax.openmm_relax:main"
-umol_add_plddt_to_relaxed = "umol.relax.add_plddt_to_relaxed:main"
+umol = "umol.inference:main"

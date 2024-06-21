@@ -77,7 +77,7 @@ def make_msa_features(
 
 
 
-def process(input_fasta_path: str, input_msas: list) -> FeatureDict:
+def process_msa_to_feature(input_fasta_path: str, input_msas: list) -> FeatureDict:
     """Runs alignment tools on the input sequence and creates features."""
     with open(input_fasta_path) as f:
       input_fasta_str = f.read()
@@ -130,7 +130,7 @@ def main():
   input_msas = args.input_msas[0].split(',')
   outdir = args.outdir[0]
   #Get feats
-  feature_dict = process(input_fasta_path, input_msas)
+  feature_dict = process_msa_to_feature(input_fasta_path, input_msas)
 
   #Write out features as a pickled dictionary.
   features_output_path = os.path.join(outdir, 'msa_features.pkl')

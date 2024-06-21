@@ -1,0 +1,31 @@
+database:
+  uc30: /mnt/db/uniref30_uc30/uniclust30_2018_08/uniclust30_2018_08
+
+weights:
+  dir: /mnt/db/weights/Umol/data/params/
+
+input:
+  fasta: '' # Path to fasta.
+  id: 'prediction' # Job identifier.
+  ligand:
+    smiles: '' 
+    sdf: ''
+  target_pos: '' #  Comma-separated list of target positions.
+
+
+bin:
+  hhblits: '' # Path to hhblits
+  
+
+runtime:
+  nproc: 32 # Number of threads
+  recycles: 3
+  PREALLOCATE: False
+
+relax:
+  restraint_type: "CA+ligand" # or "protein"
+  protein_first: False
+
+
+output:
+  dir: '.'

@@ -3,6 +3,7 @@ import pickle
 import sys
 import time
 from typing import NamedTuple
+import warnings
 import haiku as hk
 import jax
 import jax.numpy as jnp
@@ -185,7 +186,16 @@ def predict(config,
           target_pos,
           ckpt_params=None,
           num_recycles=3,
-          outdir=None):
+          outdir=None) -> str:
+    
+    prediction_dir=os.path.join( outdir,'pdb')
+    os.makedirs(prediction_dir,exist_ok=True)
+
+    outname =os.path.join( prediction_dir,f'{id}_pred_raw.pdb')
+    if os.path.exists(outname):
+        warnings.warn(RuntimeWarning(f'predictions of raw complex is already there: {outname}'))
+        return outname
+    
     """Predict a structure
     """
     #Define the forward function
@@ -226,8 +236,8 @@ def predict(config,
             'structure_module':{'final_atom_positions':ret['structure_module']['final_atom_positions'],
             'final_atom_mask': ret['structure_module']['final_atom_mask']
             }}
-    outname = outdir+id+'_pred_raw.pdb'
     save_structure(save_feats, result, outname)
+    return outname
 
 
 

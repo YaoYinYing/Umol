@@ -1,3 +1,5 @@
+import os
+from typing import Literal
 import openmm as mm
 import argparse
 import sys
@@ -15,6 +17,10 @@ from openff.toolkit.utils.exceptions import UndefinedStereochemistryError, Radic
 from openmm import CustomExternalForce
 import time
 
+from umol.net.data.tools.utils import timing_decorator
+
+
+RESTRAINTS_TYPE_HINT=Literal["CA+ligand", "protein"]
 ###########Functions##########
 def fix_pdb(
         pdbname,
@@ -74,7 +80,7 @@ def minimize_energy(
     simulation.minimizeEnergy(1, 1000)
     # Save positions
     minpositions = simulation.context.getState(getPositions=True).getPositions()
-    mm_app.PDBFile.writeFile(topology, minpositions, open(outdir+f'{out_title}.pdb','w'))
+    mm_app.PDBFile.writeFile(topology, minpositions, open(os.path.join(outdir,f'{out_title}.pdb'),'w'))
 
     reporter.close()
 
@@ -84,7 +90,7 @@ def add_restraints(
         system,
         topology,
         positions,
-        restraint_type
+        restraint_type: RESTRAINTS_TYPE_HINT
         ):
     '''Function to add restraints to specified group of atoms
 
@@ -109,8 +115,6 @@ def add_restraints(
     return system
 
 def main():
-
-    start_time = time.time()
     parser = argparse.ArgumentParser(description = '''Relax protein-ligand complex.''')
 
     parser.add_argument('--input_pdb', nargs=1, type= str, default=sys.stdin, help = 'Path to folded structure with protein.')
@@ -129,8 +133,15 @@ def main():
     relax_protein_first = args.relax_protein_first
     restraint_type = args.restraint_type[0]
 
+    relax(input_pdb,outdir,mol_in,file_name,relax_protein_first,restraint_type)
+
+@timing_decorator('Relaxing protein-ligand complex')
+def relax(input_pdb,outdir,mol_in,file_name,relax_protein_first,restraint_type: RESTRAINTS_TYPE_HINT):
     ## Read in ligand
     print('Reading ligand')
+
+    relax_dir=os.path.join(outdir, 'relax')
+    os.makedirs(relax_dir,exist_ok=True)
     try:
         ligand_mol = Molecule.from_file(mol_in)
     # Check for undefined stereochemistry, allow undefined stereochemistry to be loaded
@@ -158,7 +169,7 @@ def main():
             protein_topology,
             system,
             protein_positions,
-            outdir,
+            relax_dir,
             f'{file_name}_relaxed_protein'
         )
 
@@ -193,14 +204,16 @@ def main():
         print('Adding restraints on protein CAs and ligand atoms')
 
     system = add_restraints(system, modeller.topology, modeller.positions, restraint_type=restraint_type)
-
+    
     ## Minimize energy
     minimize_energy(
         modeller.topology,
         system,
         modeller.positions,
-        outdir,
+        relax_dir,
         f'{file_name}_relaxed_complex'
     )
 
-    print(f'Time taken for calculation is {time.time()-start_time:.1f} seconds')
+    return os.path.join(relax_dir, f'{file_name}_relaxed_complex.pdb')
+
+    

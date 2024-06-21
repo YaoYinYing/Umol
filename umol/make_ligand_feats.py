@@ -63,6 +63,7 @@ def bonds_from_smiles(smiles_string, atom_encoding):
     return np.array(atom_types), np.array(atoms), bond_matrix, D*has_bond, has_bond
 
 
+
 ##################MAIN#######################
 
 def main():
