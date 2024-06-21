@@ -9,7 +9,7 @@ description = "Umol code"
 authors = ["Name <email@address>"]
 
 readme = "README.md"
-license = "MIT"
+license = "Apache 2.0"
 repository = "https://github.com/patrickbryant1/Umol"
 classifiers = [
     "Topic :: Scientific/Engineering :: Biochemistry",
