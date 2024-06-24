@@ -2,7 +2,7 @@
 
 ## Structure prediction of protein-ligand complexes from sequence information
 
-The protein is represented with a multiple sequence alignment and the ligand as a SMILES string, allowing for unconstrained flexibility in the protein-ligand interface. There are two versions of Umol: one that uses protein pocket information (recommended) and one that does not. Please see the runscript (predict.sh) for more information.
+The protein is represented with a multiple sequence alignment and the ligand as a SMILES string, allowing for unconstrained flexibility in the protein-ligand interface. There are two versions of Umol: one that uses protein pocket information (recommended) and one that does not. Please see the [test case](test.sh) for more information.
 
 [Read the paper here](https://www.nature.com/articles/s41467-024-48837-6)
 
@@ -13,7 +13,7 @@ The Umol parameters are made available under the terms of the [CC BY 4.0 license
 
 # Colab (run Umol in the browser)
 
-[ColabNotebook](https://colab.research.google.com/github/YaoYinYing/Umol/blob/main/Umol.ipynb)
+[Colab Notebook](https://colab.research.google.com/github/YaoYinYing/Umol/blob/main/Umol.ipynb)
 
 # Local installation
 
@@ -39,7 +39,7 @@ pip install --upgrade "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-re
 pip install numpy==1.26.4
 ```
 
-## Get Uniclust30 (10-20 minutes depending on bandwidth) if you need to build MSA from local
+## Get Uniclust30 (10-20 minutes depending on bandwidth) if you need to build MSA on local machine
 
 # 25 Gb download, 87 Gb extracted
 
@@ -95,19 +95,23 @@ import umol.inference
 from umol.inference import main
 from omegaconf import DictConfig, OmegaConf
 
-# remove outout directory if it exists
+# remove output directory if it exists
 if os.path.exists(OUTDIR):
   shutil.rmtree(OUTDIR)
 
-# mv provided msa to output directory
+# copy provided msa to output directory
 os.makedirs(os.path.join(OUTDIR, 'msas'), exist_ok=True)
 shutil.copy(os.path.join(f'{ID}.a3m'), os.path.join(OUTDIR, 'msas', 'output.a3m'))
 
+mocked_db='/content/mock/uniref30_uc30/uniclust30_2018_08/uniclust30_2018_08_mock.file'
+
 # if you need to skip msa building by providing a pre-computed a3m file, please mockout the uc30 database path if it does not exist
-if not os.path.exists('/content/mock/uniref30_uc30/uniclust30_2018_08/'):
+if not os.path.exists((mocked_db_dir:=os.path.dirname(mocked_db))):
   # here we mock out ur30 database bcs we have already uploaded the msa file.
-  ! mkdir -p /content/mock/uniref30_uc30/uniclust30_2018_08/
-  ! touch /content/mock/uniref30_uc30/uniclust30_2018_08/uniclust30_2018_08_mock.file
+  os.makedirs(mocked_db_dir, exist_ok=True)
+
+  with open(mocked_db, 'w'): 
+    ...
 
 # Path of the configure file
 cfg_path=os.path.join(os.path.abspath(os.path.dirname(umol.inference.__file__)), 'config')
@@ -129,18 +133,22 @@ def reload_config_file(config_name: str = 'umol') -> DictConfig:
 # parse the global configuration yaml
 cfg=reload_config_file()
 
+updated_cfg = {'input.fasta': FASTA_FILE,
+  'input.ligand.smiles': LIGAND,
+  'input.target_pos': TARGET_POSITIONS,
+  'weights.dir': UMOL_WEIGHTS_DIR,
+  'runtime.recycles': NUM_RECYCLES,
+  'input.id': ID,
+  'output.dir': OUTDIR,
+  # also mocked uc30 db path
+  'database.uc30': mocked_db[:-10]
+}
+
+
 # update the configs with all the inputs
-OmegaConf.update(cfg, 'input.fasta', FASTA_FILE)
-OmegaConf.update(cfg, 'input.ligand.smiles', LIGAND)
-OmegaConf.update(cfg, 'input.target_pos', TARGET_POSITIONS)
-OmegaConf.update(cfg, 'weights.dir', UMOL_WEIGHTS_DIR)
-OmegaConf.update(cfg, 'runtime.recycles', NUM_RECYCLES)
-OmegaConf.update(cfg, 'input.id', ID)
-OmegaConf.update(cfg, 'output.dir', OUTDIR)
+for k, v in updated_cfg.items():
+  OmegaConf.update(cfg, k, v)
 
-
-# also mocked uc30 db path
-OmegaConf.update(cfg, 'database.uc30', '/content/mock/uniref30_uc30/uniclust30_2018_08/uniclust30_2018_08')
 
 # run with updated configuration
 main(cfg)
